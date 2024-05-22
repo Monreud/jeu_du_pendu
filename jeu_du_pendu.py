@@ -11,9 +11,9 @@ def recup_fichier():
     nom_dossier = str(input('Entrez le chemin complet du dossier dans lequel se trouve le fichier : '))
 
     # Vérification de l'existence du fichier et s'il s'agit bien d'un fichier .txt
-    if (not os.path.isfile(os.path.join(nom_dossier,nom_fichier))
-            or not os.path.exists(os.path.join(nom_dossier,nom_fichier))
-            or str(os.path.join(nom_dossier,nom_fichier))[-4:] != '.txt'):
+    if (not os.path.isfile(os.path.join(nom_dossier, nom_fichier))
+            or not os.path.exists(os.path.join(nom_dossier, nom_fichier))
+            or str(os.path.join(nom_dossier, nom_fichier))[-4:] != '.txt'):
         choix_fichier = int(input('Fichier introuvable ou n est pas un fichier .txt, souhaitez-vous 1 : Réessayer '
                                   'ou 2 : Choisir le fichier de mots par défaut ? Répondez par 1 ou 2 : '))
         if choix_fichier == 1:
@@ -27,8 +27,8 @@ def recup_fichier():
             recup_fichier()
     # Lorsque le fichier est trouvé, son chemin est retourné
     else:
-        print('Fichier trouvé, son chemin est : ' + str(os.path.join(nom_dossier,nom_fichier)))
-        chemin_fichier = str(os.path.join(nom_dossier,nom_fichier))
+        print('Fichier trouvé, son chemin est : ' + str(os.path.join(nom_dossier, nom_fichier)))
+        chemin_fichier = str(os.path.join(nom_dossier, nom_fichier))
         return chemin_fichier
 
 
@@ -79,8 +79,8 @@ def jeu(mot_para):
                     lettres_mot.insert(i, essai)
             lettres_trouvees.append(essai)
             lettres_utilisees.append(essai)
-            print('Bravo ! Voici le mot désormais : ' + ''.join(lettres_mot) + ' et les lettres utilisées '
-                                                                               'pour l instant sont ' + str(lettres_utilisees))
+            print('Bravo ! Voici le mot désormais : '
+                  + ''.join(lettres_mot) + ' et les lettres utilisées pour l instant sont ' + str(lettres_utilisees))
             if cpt == len(mot):
                 choix = 0
                 while choix != 1 or choix != 2:
