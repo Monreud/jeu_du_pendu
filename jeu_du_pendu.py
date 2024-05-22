@@ -121,5 +121,3 @@ def premiere_partie():
 
 premiere_partie()
 
-
-
