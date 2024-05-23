@@ -81,6 +81,8 @@ def jeu(mot_para):
 
     while chances > 0:  # On boucle tant que le joueur a une chance
         essai = str(input('Quelle lettre pensez-vous faire partie du mot ?'))
+        if len(essai) > 1:  # On vérifie que le joueur n'entre qu'une lettre à la fois
+            essai = str(input('Veuillez entrer une lettre à la fois svp'))
         # Lors d'une tentative, on vérifie que la lettre soit présente dans le mot
         # mais pas dans les lettres trouvées ni dans les lettres utilisées (nouvelle bonne lettre)
         if essai in mot and essai not in lettres_trouvees and essai not in lettres_utilisees:
@@ -136,7 +138,8 @@ def jeu(mot_para):
             if chances == 1:
                 lettres_mot_entier = set(mot)  # On fais un ensemble de lettres du mot à trouver
                 # On prend les lettres de l'alphabet SAUF les lettres présentes dans le mot à trouver
-                lettres_restantes_alphabet = [lettre for lettre in alphabet if lettre not in lettres_mot_entier]
+                # ET pas dans les lettres utilisées
+                lettres_restantes_alphabet = [lettre for lettre in alphabet if lettre not in lettres_mot_entier and lettre not in lettres_utilisees]
                 # On choisit au hasard une lettre de cet ensemble et on lui affiche
                 lettre_random_indice = choice(lettres_restantes_alphabet)
                 print('Vous semblez en difficulté... Voici un indice : il n y a pas de ' + lettre_random_indice)
