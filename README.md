@@ -2,6 +2,7 @@ Le dépôt contient 3 fichiers :
 - le script du jeu
 - un fichier "liste_mots.txt" avec des mots personnalisés
 - un fichier "mots_pendus.txt" avec les mots proposés sur Moodle
+- Ce fichier README.MD
 
 *** UTILISATION DU CODE ***
 Lors de la compilation, la première chose à faire est de choisir le fichier de mots. D'abord, le code vous demande d'entrer le nom du fichier (exemple : liste_mots.txt) puis de copier coller le chemin de ce fichier.
