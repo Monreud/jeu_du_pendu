@@ -1,5 +1,11 @@
-import unicodedata
-from unicodedata import normalize
+"""
+Jeu du pendu en python comprenant plusieurs fonctions :
+- Récupération du nom du fichier
+- Sélection aléatoire d'un mot et mise en équivalent sans accent
+- Jeu du pendu avec plusieurs vies, stockage des lettres utilisées, stockage des lettres trouvées,
+indice à la dernière chance, état du mot mystère à chaque boucle et proposition de rejouer à la fin d'une partie.
+"""
+
 from random import choice
 import os
 
@@ -49,6 +55,7 @@ def equivalent_accent(mot):
     return nouveau_mot
 
 
+# Fonction de choix d'un mot aléatoire
 def choix_mot(chemin_fichier):
     with open(chemin_fichier, 'r') as fio:
         mots = fio.read().splitlines()
@@ -57,33 +64,39 @@ def choix_mot(chemin_fichier):
     return vrai_mot
 
 
+# Procédure principale du jeu
 def jeu(mot_para):
-    mot = equivalent_accent(mot_para)
-    #   print(mot)
+    mot = equivalent_accent(mot_para)  # Transformée du mot potentiellement avec accent en sans accent
+    #   print(mot) # Retirer le commentaire pour pouvoir vérifier le mot en début de partie
 
-    chances = 6
-    print('Mot à trouver : ' + len(mot) * '_')
+    chances = 6  # Déclaration des chances initiales
+    print('Mot à trouver : ' + len(mot) * '_')  # Annonce du nombre de lettres à trouver
 
+    # Déclaration des variables du mot en cours, des lettres trouvées et des lettres utilisées
     lettres_mot = len(mot) * ['_']
     lettres_trouvees = len(mot) * []
     lettres_utilisees = []
-    cpt = 0
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'  # Utilisé pour l'indice à 1 chance
+    cpt = 0  # Déclaration du compteur de bonne réponse
 
-    while chances > 0:
+    while chances > 0:  # On boucle tant que le joueur a une chance
         essai = str(input('Quelle lettre pensez-vous faire partie du mot ?'))
-        if essai in mot and essai not in lettres_trouvees:
-            for i in range(len(mot)):
+        # Lors d'une tentative, on vérifie que la lettre soit présente dans le mot
+        # mais pas dans les lettres trouvées ni dans les lettres utilisées (nouvelle bonne lettre)
+        if essai in mot and essai not in lettres_trouvees and essai not in lettres_utilisees:
+            for i in range(len(mot)):  # On cherche alors dans tous les caractères du mot les cohérences
                 if essai == mot[i]:
-                    cpt += 1
+                    cpt += 1  # A chaque occurence, le joueur obtient une bonne réponse
                     del lettres_mot[i]
-                    lettres_mot.insert(i, essai)
+                    lettres_mot.insert(i, essai)  # On remplace alors le tiret par la lettre trouvée
             lettres_trouvees.append(essai)
-            lettres_utilisees.append(essai)
-            print('Bravo ! Voici le mot désormais : '
+            lettres_utilisees.append(essai)  # On ajoute la lettre trouvée et utilisée dans les listes
+
+            print('Bravo ! Voici le mot désormais : '  # Mise à jour du mot
                   + ''.join(lettres_mot) + ' et les lettres utilisées pour l instant sont ' + str(lettres_utilisees))
-            if cpt == len(mot):
+            if cpt == len(mot):  # Lors de la réussite, on vérifie si le joueur a trouvé toutes les lettres
                 choix = 0
-                while choix != 1 or choix != 2:
+                while choix != 1 or choix != 2:  # Choix de relancer une partie
                     choix = int(input('Vous avez gagné ! Voulez-vous refaire une partie ? 1 pour oui et 2 pour non'))
                     if choix == 1:
                         fichier = recup_fichier()
@@ -92,18 +105,45 @@ def jeu(mot_para):
                     elif choix == 2:
                         print('Merci d avoir joué ! A bientôt ! ')
                         return 0
+
+        # Si la lettre est dans le mot mais est aussi déjà dans les lettres trouvées alors il peut réessayer
+        # et les lettres utilisées sont affichées
         elif essai in mot and essai in lettres_trouvees:
-            print('Vous avez déjà trouvé cette lettre, tentez autre chose ! ')
+            print('Vous avez déjà trouvé cette lettre, tentez autre chose ! ' + ''.join(lettres_mot))
+            print('Les lettres utilisees pour l instant sont : ' + str(lettres_utilisees))
+
+        # Si la lettre est dans le mot mais est aussi déjà dans les lettres déjà utilisées alors il peut réessayer
+        # et les lettres utilisées sont affichées
+        elif essai in mot and essai in lettres_utilisees:
+            print('Vous avez déjà utilisé cette lettre, tentez autre chose ! ' + ''.join(lettres_mot))
+            print('Les lettres utilisees pour l instant sont : ' + str(lettres_utilisees))
+
+        # Si la lettre n'est pas dans le mot mais déjà dans les lettres utilisées alors il peut réessayer
+        # et les lettres utilisées sont affichées
+        elif essai not in mot and essai in lettres_utilisees:
+            print('Vous avez déjà utilisé cette lettre, tentez autre chose ! ' + ''.join(lettres_mot))
+            print('Les lettres utilisees pour l instant sont : ' + str(lettres_utilisees))
+
+        # Sinon, le joueur perd une vie
         else:
             chances -= 1
-            lettres_utilisees.append(essai)
-            print('Oh non ! Mauvaise pioche ! Plus que ' + str(chances) + ' vies ! ')
+            lettres_utilisees.append(essai)  # La lettre est ajoutée à la liste des lettres utilisées
+            # et elles sont affichées
+            print('Oh non ! Mauvaise pioche ! Plus que ' + str(chances) + ' vies ! ' + ''.join(lettres_mot))
             print('Les lettres utilisees pour l instant sont : ' + str(lettres_utilisees))
+
+            # Quand le joueur arrive à une chance, il a droit à un indice sur une lettre qui n'est pas dans le mot
             if chances == 1:
-                print('Vous semblez en difficulté... Voici un indice : ')
-    choix = 0
+                lettres_mot_entier = set(mot)  # On fais un ensemble de lettres du mot à trouver
+                # On prend les lettres de l'alphabet SAUF les lettres présentes dans le mot à trouver
+                lettres_restantes_alphabet = [lettre for lettre in alphabet if lettre not in lettres_mot_entier]
+                # On choisit au hasard une lettre de cet ensemble et on lui affiche
+                lettre_random_indice = choice(lettres_restantes_alphabet)
+                print('Vous semblez en difficulté... Voici un indice : il n y a pas de ' + lettre_random_indice)
+    choix = 0  # Lorsque le joueur n'a plus de chance, on lui propose de rejouer ou de quitter
     while choix != 1 or choix != 2:
-        choix = int(input('Vous avez perdu ! Voulez-vous refaire une partie ? 1 pour oui et 2 pour non'))
+        choix = int(input('Vous avez perdu ! Le mot était : ' + mot +
+                          '\n Voulez-vous refaire une partie ? 1 pour oui et 2 pour non'))
         if choix == 1:
             fichier = recup_fichier()
             mot = choix_mot(fichier)
@@ -113,10 +153,12 @@ def jeu(mot_para):
             return 0
 
 
+# Procédure de lancement de la première partie
 def premiere_partie():
     fichier = recup_fichier()
     mot = choix_mot(fichier)
     jeu(mot)
 
 
+# Appel de la procédure de jeu
 premiere_partie()
